@@ -133,13 +133,65 @@ print(X2.toarray())
 # 4- TF-IDF Vektörleştirme
 # 5- Feature isimlerini ve arrayi ekrana yazdır.
 
+
 # generate a corpus of 10 about AI in english
 corpus = [
     "Artificial Intelligence is the future.",
     "AI is changing the world.",
     "AI is a branch of computer science.",
+    "Machine learning is a subset of AI.",
+    "Deep learning enables machines to learn from data.",
+    "AI can improve healthcare and education.",
+    "Natural Language Processing allows machines to understand text.",
+    "Self-driving cars use AI to navigate.",
+    "AI systems can recognize speech and images.",
+    "Ethics in AI is becoming more important every day."
 ]
 
+import nltk
+import re
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+# Gerekli verileri indir
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+
+def nlp_pipeline(corpus):
+    stop_words = set(stopwords.words('english'))
+    lemmatizer = WordNetLemmatizer()
+    cleaned_corpus = []
+
+    for text in corpus:
+        # Lowercasing
+        text = text.lower()
+        # Remove punctuation
+        text = re.sub(r'[^\w\s]', '', text)
+        # Remove numbers
+        text = re.sub(r'\d+', '', text)
+        # Tokenization
+        tokens = word_tokenize(text)
+        # Stopword removal + sadece harf içeren kelimeleri al
+        tokens = [word for word in tokens if word.isalpha() and word not in stop_words]
+        # Lemmatization
+        tokens = [lemmatizer.lemmatize(word) for word in tokens]
+        # Cümleyi tekrar string'e çevir
+        cleaned_text = ' '.join(tokens)
+        cleaned_corpus.append(cleaned_text)
+
+    # TF-IDF vektörleştirme
+    vectorizer = TfidfVectorizer()
+    X = vectorizer.fit_transform(cleaned_corpus)
+
+    # Feature isimlerini ve array'i yazdır
+    print("Feature Names:\n", vectorizer.get_feature_names_out())
+    print("\nTF-IDF Array:\n", X.toarray())
+
+# Fonksiyonu çağır
+nlp_pipeline(corpus)
 
 
 
