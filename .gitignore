@@ -1,0 +1,6 @@
+# Klasörleri GitHub'dan gizle
+ders2/
+gyk-nlp/
+
+# Sadece goemotions_combined.csv dosyasını göster
+!goemotions_combined.csv 
