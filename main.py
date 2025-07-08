@@ -9,7 +9,6 @@ from sklearn.metrics         import classification_report
 # 1. Veri yükle
 df = pd.read_csv("goemotions_combined.csv")
 
-
 # 2. Basit temizleme
 def clean_text(s):
     s = str(s).lower()
@@ -19,8 +18,21 @@ def clean_text(s):
 
 df["text_clean"] = df["text"].apply(clean_text)
 
-# 3. Çok-sınıflı label oluştur (argmax 27 duygu)
+# 3. Duygu sütunlarını al ve önce sayısala çevir
 emotion_cols = [c for c in df.columns if c not in ["text","author","link","text_clean"]]
+
+# 3.a) Hangi sütunlar var, tipleri nedir kontrol edelim (isteğe bağlı)
+print("Duygu sütunları ve tipleri:")
+print(df[emotion_cols].dtypes)
+
+# 3.b) String/NaN değerleri sayıya zorla, dönüştürülemeyenleri NaN olur, sonra 0 ile doldur
+df[emotion_cols] = (
+    df[emotion_cols]
+      .apply(pd.to_numeric, errors="coerce")  # str→NaN
+      .fillna(0)                              # NaN→0
+)
+
+# 3.c) Argmax ile label oluştur
 df["label"] = df[emotion_cols].values.argmax(axis=1)
 
 # 4. Split %80 train / %20 test
