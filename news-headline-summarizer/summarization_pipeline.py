@@ -17,6 +17,7 @@ df = pd.read_csv("cnn_dailymail/validation.csv") # veya test.csv
 df.rename(columns={"highlights": "summary"}, inplace=True)
 
 df = df[["article", "summary"]]  # Sadece gerekli sütunlar kalsın
+df = df.sample(500, random_state=42)  # Eğitim süresini kısaltmak için sadece 500 örnek al
 
 
 
