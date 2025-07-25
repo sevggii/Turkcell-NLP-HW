@@ -1,3 +1,5 @@
+##Merhabalar, bu ödev Sevgi Targay ve Büşranur Çevik tarafından hazırlanmıştır
+
 # Haber Başlıklarından Otomatik Özetleme (NLP Ödevi)
 
 ## Amaç

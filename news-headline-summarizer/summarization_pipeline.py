@@ -1,6 +1,10 @@
+##Merhabalar bu ödev Sevgi Targay ve Büşranur Çevik tarafından hazırlanmıştır, 
+
 import pandas as pd
 import numpy as np
-from transformers import T5Tokenizer, T5ForConditionalGeneration, Trainer, TrainingArguments
+from transformers import T5Tokenizer, T5ForConditionalGeneration, Trainer
+from transformers import Seq2SeqTrainingArguments as TrainingArguments
+
 from datasets import Dataset
 import evaluate
 import torch
@@ -8,7 +12,13 @@ import torch
 # ----------------------
 # 1. Veri Yükleme
 # ----------------------
-df = pd.read_csv("validation.csv")  # veya test.csv
+df = pd.read_csv("cnn_dailymail/validation.csv") # veya test.csv
+
+df.rename(columns={"highlights": "summary"}, inplace=True)
+
+df = df[["article", "summary"]]  # Sadece gerekli sütunlar kalsın
+
+
 
 # ----------------------
 # 2. Ön İşleme Fonksiyonu
@@ -32,23 +42,30 @@ max_target = 64
 # 4. Tokenizasyon
 # ----------------------
 def tokenize_function(example):
-    model_input = tokenizer(
-        example['article'],
+    inputs = tokenizer(
+        example["article"],
         max_length=max_input,
         padding="max_length",
         truncation=True
     )
-    labels = tokenizer(
-        example['summary'],
+    targets = tokenizer(
+        example["summary"],
         max_length=max_target,
         padding="max_length",
         truncation=True
     )
-    model_input["labels"] = labels["input_ids"]
-    return model_input
+    return {
+        "input_ids": inputs["input_ids"],
+        "attention_mask": inputs["attention_mask"],
+        "labels": targets["input_ids"]
+    }
 
-raw_dataset = Dataset.from_pandas(df)
-tokenized_dataset = raw_dataset.map(tokenize_function)
+
+
+
+raw_dataset = Dataset.from_pandas(df[["article", "summary"]])
+tokenized_dataset = raw_dataset.map(tokenize_function, remove_columns=["article", "summary"])
+
 
 # ----------------------
 # 5. Model Kurulumu
