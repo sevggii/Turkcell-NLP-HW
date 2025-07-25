@@ -64,7 +64,8 @@ def tokenize_function(example):
 
 
 
-raw_dataset = Dataset.from_pandas(df[["article", "summary"]])
+raw_dataset = Dataset.from_pandas(df[["article", "summary"]], preserve_index=False)
+
 tokenized_dataset = raw_dataset.map(tokenize_function, remove_columns=["article", "summary"])
 
 
